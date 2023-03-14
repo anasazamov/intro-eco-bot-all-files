@@ -1,1 +1,54 @@
+import requests
+TOKEN="6058623152:AAGROkpnAa7tK6gXhGiE_F-DpMqqFuxK8ns"
+base_url="https://api.telegram.org/bot{0}/".format(TOKEN)
+def sendMessage(chat_id, text):
+    payload={'chat_id':chat_id,'text':text}
+    requests.get(base_url+"sendMessage",params=payload)
+    return 0
+def sendPhoto(chat_id, photo):
+    payload={'chat_id':chat_id,'photo':photo}
+    requests.get(base_url+"sendPhoto",params=payload)
+    return 0
+def sendDice(chat_id):
+    payload={'chat_id':chat_id}
+    requests.get(base_url+"sendDice",params=payload)
+    return 0
+def sendVideo(chat_id, video):
+    payload={'chat_id':chat_id,'video':video}
+    requests.get(base_url+"sendVideo",params=payload)
+    return 0
+def sendAudio(chat_id, audio):
+    payload={'chat_id':chat_id,'audio':audio}
+    requests.get(base_url+"sendAudio",params=payload)
+    return 0
+def sendVoice(chat_id, voice):
+    payload={'chat_id':chat_id,'voice':voice}
+    requests.get(base_url+"sendVoice",params=payload)
+    return 0
 
+def main():
+    d=requests.get(base_url+"getUpdates").json()["result"]
+    return d
+l=len(requests.get(base_url+"getUpdates").json()["result"])
+
+while True:
+    d=main()
+    chat_id=d[-1]["message"]["from"]["id"]
+    l2=len(d)
+    
+    if l2!=l:
+        if d[-1].get("text"):
+            sendMessage(chat_id,d[-1]["message"].get("text"))
+        elif (d[-1]["message"].get("photo")):
+            sendPhoto(chat_id,d[-1]["message"].get("photo")[-1]["file_id"])
+        elif d[-1]["message"].get("dice"):
+            sendDice(chat_id,d[-1]["message"].get("dice")["emoji"])
+        elif d[-1]["message"].get("video"):
+            sendVideo(chat_id,d[-1]["message"].get("video")["file_id"])
+        elif ( d[-1]["message"].get("audio")):
+            sendAudio(chat_id,d[-1]["message"].get("audio")["file_id"])
+        elif d[-1]["message"].get("voice"):
+            sendVoice(chat_id,d[-1]["message"].get("voice")["file_id"])
+        
+        l=len(d)
+        
